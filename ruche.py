@@ -8,6 +8,7 @@ import os
 import smbus
 import GPIO
 import I2C
+import requests
 
 #---------------- COMPOSANTS DE SORTIE - OUTPUT -----
 #Partie Buzzer
@@ -214,12 +215,15 @@ class LSM6DS3:
 
 #Partie push bullet:
 
-#	def send_alert(): 
-	#Envoie une notifications à l'apiculteru via pushbullet
+	def send_alert(): 
+	os.system("""curl -u <user_token>: https://api.pushbullet.com/v2/pushes -d type=note -d title="Alerte! Ruche en mouvement" """)
 
+	
 #Partie envoie de données sur google sheet:
-#	def send_son():
-	#Sauvegarde les donnees recuperee dans le google sheet
+        #cette fonction envoie la valeur val_db dans le google sheet
+	def send_son(val_db):
+            requests.post("https://docs.google.com/forms/d/**id_form***/formResponse",{"entry.1417047577":val_db,verify=False)
+
 
 #	def send_poids():
 	#Sauvegarde les donnees recuperee dans le google sheet
