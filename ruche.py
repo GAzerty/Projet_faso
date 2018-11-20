@@ -3,6 +3,7 @@
 #IMPORT
 import grovepi
 import time
+import sys, math
 import os
 import smbus
 import GPIO
@@ -105,7 +106,7 @@ loudness_sensor = 0 #Le loudness sensor est connecte au port A0
 	#Capte le son de la ruche 
 
 #	def affichage_graphe_son():
-	#Le graphe est affiché sur un moniteur. Il recupère les valeurs stocké dans la base de données
+	#Le graphe est affiche sur un moniteur. Il recupere les valeurs stocke dans la base de donnees
 
 #Partie Accelerometre 
 
@@ -211,13 +212,14 @@ class LSM6DS3:
 #	def affichage_graphe_poids():
 
 
-#Partie base de données
+#Partie push bullet:
 
-#	def init_bdd:
-	#Fonction pour initialiser la connection à la base de données
+#	def send_alert(): 
+	#Envoie une notifications à l'apiculteru via pushbullet
 
-#	def save_son():
-	#Sauvegarde les données récupérée dans la base de données
+#Partie envoie de données sur google sheet:
+#	def send_son():
+	#Sauvegarde les donnees recuperee dans le google sheet
 
-#	def save_poids():
-	#Sauvegarde les données récupérée dans la base de données
+#	def send_poids():
+	#Sauvegarde les donnees recuperee dans le google sheet
