@@ -50,8 +50,14 @@ def alarme_vol2():
         except IOError:
             print ("Arret de l'alarme")
 
+            
+def allume_alarme():
+    grovepi.digitalWrite(buzzer,1)
+    
 def arret_alarme():
     grovepi.digitalWrite(buzzer,0)
+
+
 
 #Partie LCD
 
@@ -195,10 +201,21 @@ class LSM6DS3:
         output = rawInput * 4.375 * (gyroRangeDivisor) / 1000;
         return output;
 
-#def ruche_enMouvement():
-	#Retourne un boolean, True si en mouvement false sinon.
-	#Cette fonction ne fait pas partie de la classe lsm6ds3
-
+    #ruche_enMouvement : lsm -> Bool
+    #Renvoi True si l'accelerometre est en mouvement, False sinon
+    #On verifie que la difference entre deux prises de valeurs ne consitue pas un ecart trop important
+    def ruche_enMouvement(self):
+        enMouvement = False
+        xdebut = self.readRawAccelX()
+        ydebut = self.readRawAccelY()
+        zdebut = self.readRawAccelZ()
+        time.sleep(0.2)
+        xfin = self.readRawAccelX()
+        yfin = self.readRawAccelY()
+        zfin = self.readRawAccelZ()
+        if (abs(xdebut - xfin) > 1300 or abs(ydebut - yfin) > 1300 or abs(zdebut - zfin) > 1300):
+            enMouvement = True
+        return enMouvement
 
 #Partie capteur de poids
 
@@ -215,15 +232,14 @@ class LSM6DS3:
 
 #Partie push bullet:
 
-	def send_alert(): 
-            os.system("""curl -u <user_token>: https://api.pushbullet.com/v2/pushes -d type=note -d title="Alerte! Ruche en mouvement" """)
+def send_alert(): 
+    os.system("""curl -u o.HtaLNwbGwV07Yjrs9rAtjeBC4ZMY618c: https://api.pushbullet.com/v2/pushes -d type=note -d title="Alerte! Ruche en mouvement" """)
 
 	
-#Partie envoie de données sur google sheet:
+#Partie envoie de donnees sur google sheet:
         #cette fonction envoie la valeur val_db dans le google sheet
-	def send_son(val_db):
-            requests.post("https://docs.google.com/forms/d/**id_form***/formResponse",{"entry.1417047577":val_db,verify=False)
-
+def send_son(val_db):
+    requests.post("https://docs.google.com/forms/d/1ng15SA79HeTZJ8y2yJtp7VZVFGPblCdiNUAQYMO21e8/formResponse",{"entry.1417047577":val_db},verify=False)
 
 #	def send_poids():
 	#Sauvegarde les donnees recuperee dans le google sheet
