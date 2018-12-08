@@ -1,12 +1,14 @@
 #Main du projet faso, protection et statistiques de ruches
 #On importe ruche.py, notre bibliotheque specifique a notre systeme
 
-import ruche, time
+import ruche, time, grovepi, math
 
 #Initialisation des variables globales
 hivesystems_secure = True
 hivesystems_alarm = False
 lsm = ruche.LSM6DS3()
+loudness_sensor = 0
+soundValues = []
 
 #Initialisation de l'ecran
 ruche.initialisation_ecran()
@@ -24,8 +26,26 @@ while True:
         #De poids
 
         #On fait la moyenne des donnees de son au bout de 20 valeurs
-        #   On envoie ses valeurs
+        #   On trie par ordre croissant et on enleve les plus grosses valeurs
+        # La capture sonore n'est pas effice lorsqu'il y a des variantion importantes en peu de temps
+        #   Cependant, elle resitue des donnees coherentes lorsque que le son est relativement constant avec des variantions lentes comme c'est le cas dans une ruche
+        sensor_value = grovepi.analogRead(loudness_sensor)
+        if sensor_value <= 0:
+            sensor_value = 0.004875
+            #ref_SPL + 20 * log10(db_current / sensitivity));
+        db = (94 + (20 * math.log10(sensor_value/3.16)))
+        db = db / 2
+        soundValues.append(db)
 
+        if len(soundValues) == 20:
+            soundValues = sorted(soundValues)
+            soundValues = soundValues[:-7] #On enleve les 7 plus grosses valeurs
+            sum = 0
+            for i in soundValues:
+                sum = sum + i
+            db_avg = sum / len(soundValues)
+            ruche.prompt_values(53, round(db_avg,0))
+            soundValues = [] #Reinitialisation de la liste
 
         if lsm.ruche_enMouvement(): #Verifie si la ruche est en mouvement
             print("La ruche bouge !")
