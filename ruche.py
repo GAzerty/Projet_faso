@@ -17,38 +17,31 @@ buzzer = 8 #Le buzzer est connecte au digital port D8 du shield
 grovepi.pinMode(buzzer,"OUTPUT") #Le port D8 est definit comme port de Sortie
 
 def alarme_vol1():
-    while True:
-        try:
-            grovepi.digitalWrite(buzzer,1) # Buzzer actif 
-            #print ('start')
-            time.sleep(0.1) # Buzzer actif pendant 0.1 seconde
+    fin_alarme = time.time() + 20
+    while time.time() < fin_alarme:
+        grovepi.digitalWrite(buzzer,1) # Buzzer actif
+        #print ('start')
+        time.sleep(0.1) # Buzzer actif pendant 0.1 seconde
 
-            grovepi.digitalWrite(buzzer,0) # Buzzer a l'arret
-            #print ('stop')
-            time.sleep(0.2) # Buzzer a l'arret pendant 0.2 seconde
+        grovepi.digitalWrite(buzzer,0) # Buzzer a l'arret
+        #print ('stop')
+        time.sleep(0.2) # Buzzer a l'arret pendant 0.2 seconde
 
-        except KeyboardInterrupt: #Arret de l'alarme via interruption clavier
-            grovepi.digitalWrite(buzzer,0) #Arret du buzzer
-            break
-        except IOError:
-            print ("Arret de l'alarme")
+    grovepi.digitalWrite(buzzer, 0) #On s'assure d'eteindre le buzzer
+
 
 def alarme_vol2():
-    while True:
-        try:
-            grovepi.digitalWrite(buzzer,1) # Buzzer actif 
-            #print ('start')
-            time.sleep(0.5) # Buzzer actif pendant 0.5 seconde
+    fin_alarme = time.time() + 20
+    while time.time() < fin_alarme:
+        grovepi.digitalWrite(buzzer,1) # Buzzer actif
+        #print ('start')
+        time.sleep(0.5) # Buzzer actif pendant 0.5 seconde
 
-            grovepi.digitalWrite(buzzer,0) # Buzzer a l'arret
-            #print ('stop')
-            time.sleep(1) # Buzzer a l'arret pendant 1 seconde
+        grovepi.digitalWrite(buzzer,0) # Buzzer a l'arret
+        #print ('stop')
+        time.sleep(1) # Buzzer a l'arret pendant 1 seconde
 
-        except KeyboardInterrupt: #Arret de l'alarme via interruption clavier
-            grovepi.digitalWrite(buzzer,0) #Arret du buzzer
-            break
-        except IOError:
-            print ("Arret de l'alarme")
+    grovepi.digitalWrite(buzzer, 0)  # On s'assure d'eteindre le buzzer
 
             
 def allume_alarme():

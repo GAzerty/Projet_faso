@@ -37,9 +37,9 @@ while True:
         db = db / 2
         soundValues.append(db)
 
-        if len(soundValues) == 20:
+        if len(soundValues) == 10:
             soundValues = sorted(soundValues)
-            soundValues = soundValues[:-7] #On enleve les 7 plus grosses valeurs
+            soundValues = soundValues[:-5] #On enleve les 7 plus grosses valeurs
             sum = 0
             for i in soundValues:
                 sum = sum + i
@@ -66,11 +66,11 @@ while True:
         #   hivesystems_alarm = False
         #   Arret du buzzer
         print("Alarme activee")
-        ruche.allume_alarme()
-        time.sleep(20) #On active l'alarme pendant 20 secondes !
+        ruche.alarme_vol2()
+        #time.sleep(20) #On active l'alarme pendant 20 secondes !
         if not lsm.ruche_enMouvement():
             hivesystems_secure = True
             hivesystems_alarm = False
             ruche.arret_alarme()
             print("Fin de l'alarme, basculement vers le secure...")
-            time.sleep(10)
+            #time.sleep(10)
