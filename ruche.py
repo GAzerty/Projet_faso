@@ -9,6 +9,7 @@ import smbus
 import GPIO
 import I2C
 import requests
+import serial
 
 #---------------- COMPOSANTS DE SORTIE - OUTPUT -----
 #Partie Buzzer
@@ -212,14 +213,24 @@ class LSM6DS3:
 
 #Partie capteur de poids
 
-# 	def init_poids():
-	#Initialise le capteur de poids
+    #Retourne le poids de la ruche en gramme
+def pese_ruche():
+    capteur_poids = serial.Serial('/dev/ttyACM0', 9600)
+    list_poid = []
+    i = 0
+    sum = 0
+    while i < 40 :
+        print(capteur_poids.readline())
 
+        poids = int(capteur_poids.readline())
+        if poids < 70000:
+            list_poid.append(poids)
+        i = i +1
 
-#	def pese_ruche():
-	#Mesure le poid de la ruche
-
-
+    for val in list_poid:
+        sum = sum + val
+    poids_avg = round(sum/len(list_poid),1)
+    return poids_avg
 #	def affichage_graphe_poids():
 
 
