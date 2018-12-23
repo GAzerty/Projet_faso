@@ -30,8 +30,11 @@ print("------------ HIVE SYSTEMS ------------")
 while True:
 
     while hivesystems_secure:
+        
         print("Securisation de la ruche activee")
+        
         date_actuelle = datetime.now() #On recupere la date actuelle, heure, minutes et secondes
+
         #On recupere les donnees de son
         #De poids
 
@@ -43,18 +46,18 @@ while True:
             soundValues.append(son)
             minute_reference_son = minute_reference_son + timedelta(minutes=1)
 
-        if len(soundValues)==6:
+        if len(soundValues)==6: #Au bout de 6 valeurs recoltees on peut faire une moyenne et envoyer cela à la dashboard( au google sheet dans un premier temps)
             val_db_heure = ruche.calcule_dB_heure(soundValues)
-            soundValues = list()
+            soundValues = list() #On remet a zero la liste de valeurs
             ruche.send_son(val_db_heure)
 
         print(soundValues)
 
-        """
-        if date_actuelle.day == date_reference_Poids.days #Nous verifions si le jour notre date de reference et le jour de notre date actuelle correspondent.
+        """jour_actuel = date_actuelle.day
+        if jour_actuel == date_reference_Poids.day #Nous verifions si le jour de notre date de reference et le jour de notre date actuelle correspondent.
             poids = ruche.pese_ruche()                  #Si les jours correspondent alors on pese la ruche
             date_reference_Poids = date_reference_Poids + timedelta(days=1) #On change notre date de reference en ajoutant 1 jour, afin que la ruche soit pese demain en debut de journee (minuit)
-        """    
+        """  
 
         if lsm.ruche_enMouvement(): #Verifie si la ruche est en mouvement
             print("La ruche bouge !")
@@ -85,3 +88,4 @@ while True:
             ruche.arret_alarme()
             print("Fin de l'alarme, basculement vers le secure...")
             #time.sleep(10)
+            #Faut-il retablir date_reference_poids et minute_reference_son ? Au cas ou l'interruption dure plus d'une minute ou plus d'un jour, on perdrait notre repere et le system ne recupererai plus de donnees
