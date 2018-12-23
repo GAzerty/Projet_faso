@@ -2,18 +2,27 @@
 #On importe ruche.py, notre bibliotheque specifique a notre systeme
 
 import ruche, time, grovepi, math
+from datetime import datetime, timedelta
 
 #Initialisation des variables globales
+print("Intialisation du systeme ...")
+time.sleep(5)
 hivesystems_secure = True
 hivesystems_alarm = False
 lsm = ruche.LSM6DS3()
 loudness_sensor = 0
-soundValues = []
-
+soundValues = list()
 #Initialisation de l'ecran
 ruche.initialisation_ecran()
 ruche.setRGB(0,255,0)
-ruche.prompt_values(53,30)
+
+#poids = ruche.pese_ruche()
+poids = 45
+son = ruche.capte_son()
+date_reference_Poids = datetime.now() + timedelta(days=1)
+minute_reference_son = datetime.now() + timedelta(minutes=1)
+
+ruche.prompt_values(poids,son)
 
 #Debut du programme principal
 print("------------ HIVE SYSTEMS ------------")
@@ -22,30 +31,30 @@ while True:
 
     while hivesystems_secure:
         print("Securisation de la ruche activee")
+        date_actuelle = datetime.now() #On recupere la date actuelle, heure, minutes et secondes
         #On recupere les donnees de son
         #De poids
 
-        #On fait la moyenne des donnees de son au bout de 20 valeurs
-        #   On trie par ordre croissant et on enleve les plus grosses valeurs
-        # La capture sonore n'est pas effice lorsqu'il y a des variantion importantes en peu de temps
-        #   Cependant, elle resitue des donnees coherentes lorsque que le son est relativement constant avec des variantions lentes comme c'est le cas dans une ruche
-        sensor_value = grovepi.analogRead(loudness_sensor)
-        if sensor_value <= 0:
-            sensor_value = 0.004875
-            #ref_SPL + 20 * log10(db_current / sensitivity));
-        db = (94 + (20 * math.log10(sensor_value/3.16)))
-        db = db / 2
-        soundValues.append(db)
+        minute_actuelle = date_actuelle.minute
+        #print("minute_actuelle : "+str(minute_actuelle))
+        #print("minute_reference_son : "+str(minute_reference_son.minute))
+        if minute_reference_son.minute == minute_actuelle: # Toutes les 10 minutes on verifie si on peut mesurer l'intensite sonore de la ruche
+            son = ruche.capte_son()
+            soundValues.append(son)
+            minute_reference_son = minute_reference_son + timedelta(minutes=1)
 
-        if len(soundValues) == 10:
-            soundValues = sorted(soundValues)
-            soundValues = soundValues[:-5] #On enleve les 7 plus grosses valeurs
-            sum = 0
-            for i in soundValues:
-                sum = sum + i
-            db_avg = sum / len(soundValues)
-            ruche.prompt_values(53, round(db_avg,0))
-            soundValues = [] #Reinitialisation de la liste
+        if len(soundValues)==6:
+            val_db_heure = ruche.calcule_dB_heure(soundValues)
+            soundValues = list()
+            ruche.send_son(val_db_heure)
+
+        print(soundValues)
+
+        """
+        if date_actuelle.day == date_reference_Poids.days #Nous verifions si le jour notre date de reference et le jour de notre date actuelle correspondent.
+            poids = ruche.pese_ruche()                  #Si les jours correspondent alors on pese la ruche
+            date_reference_Poids = date_reference_Poids + timedelta(days=1) #On change notre date de reference en ajoutant 1 jour, afin que la ruche soit pese demain en debut de journee (minuit)
+        """    
 
         if lsm.ruche_enMouvement(): #Verifie si la ruche est en mouvement
             print("La ruche bouge !")
@@ -56,6 +65,8 @@ while True:
             hivesystems_alarm = True
             print("Fin de secure, activation de l'alarme ...")
 
+        #Affichage des valeurs sur l'ecran LCD
+        ruche.prompt_values(poids,son)
 
     while hivesystems_alarm:
 

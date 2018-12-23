@@ -102,12 +102,47 @@ def prompt_values(poids,son):
 
 loudness_sensor = 0 #Le loudness sensor est connecte au port A0
 
+#On fait la moyenne des donnees de son au bout de 20 valeurs
+#On trie par ordre croissant et on enleve les plus grosses valeurs
+# La capture sonore n'est pas efficace lorsqu'il y a des variantions importantes en peu de temps
+#Cependant, elle resitue des donnees coherentes lorsque que le son est relativement constant avec des variantions lentes comme c'est le cas dans une ruche
+def capte_son():
 
-#	def capte_son():
-	#Capte le son de la ruche 
+    soundValues = [] #Init d'une liste de valeurs de db 
+    valeurs = 1 #Tant que l'on a pas recupere 20 valeurs
+    while valeurs < 20:
+        sensor_value = grovepi.analogRead(loudness_sensor)
+        if sensor_value <= 0:
+            sensor_value = 0.004875
+            #ref_SPL + 20 * log10(db_current / sensitivity));
+            
+        db = (94 + (20 * math.log10(sensor_value/3.16)))
+        db = db / 4
+        soundValues.append(db)
+        time.sleep(.1)
+        valeurs = valeurs + 1
 
-#	def affichage_graphe_son():
-	#Le graphe est affiche sur un moniteur. Il recupere les valeurs stocke dans la base de donnees
+    #print(soundValues)
+    soundValues = sorted(soundValues)
+    soundValues = soundValues[:-7] #On enleve les 7 plus grosses valeurs
+    sum = 0
+    for i in soundValues:
+        sum = sum + i
+    db_avg = sum / len(soundValues)
+    db_avg = round(db_avg,0)
+    return db_avg
+
+#Cette fonction prend en parametre une liste de valeurs (en dB) qui correspondent aux valeurs recuperee pendant 1 heure
+def calcule_dB_heure(soundValues):
+    sum = 0
+    for i in soundValues:
+        sum = sum + i
+    db_heure = sum / len(soundValues)
+    db_heure = round(db_heure,0)
+    return db_heure
+
+#def affichage_graphe_son():
+#Le graphe est affiche sur un moniteur. Il recupere les valeurs stocke dans la base de donnees
 
 #Partie Accelerometre 
 
@@ -245,5 +280,5 @@ def send_alert():
 def send_son(val_db):
     requests.post("https://docs.google.com/forms/d/1ng15SA79HeTZJ8y2yJtp7VZVFGPblCdiNUAQYMO21e8/formResponse",{"entry.1417047577":val_db},verify=False)
 
-#	def send_poids():
-	#Sauvegarde les donnees recuperee dans le google sheet
+#def send_poids():
+    #Sauvegarde les donnees recuperee dans le google sheet
