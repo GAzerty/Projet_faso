@@ -278,7 +278,7 @@ def send_alert():
 #Partie envoie de donnees sur google sheet:
         #cette fonction envoie la valeur val_db dans le google sheet
 def send_son(val_db):
-    requests.post("https://docs.google.com/forms/d/1ng15SA79HeTZJ8y2yJtp7VZVFGPblCdiNUAQYMO21e8/formResponse",{"entry.1417047577":val_db},verify=False)
+    requests.post("https://docs.google.com/forms/d/1FAIpQLScMEsIn8WCy6DNhBSBSFh3iL006SQbbqtZgf3-8fLnC9Ql6zA/formResponse",{"entry.1161450509":val_db},verify=False)
 
-#def send_poids():
-    #Sauvegarde les donnees recuperee dans le google sheet
+def send_poids():
+    requests.post("https://docs.google.com/forms/d/1FAIpQLSeJYwdmzRsyKKxHwtmpGVuij7U0lYqGBPaWSlcgzkJhD5rGtg/formResponse",{"entry.870542912":val_db},verify=False)
