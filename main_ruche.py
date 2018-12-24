@@ -46,18 +46,21 @@ while True:
             soundValues.append(son)
             minute_reference_son = minute_reference_son + timedelta(minutes=1)
 
-        if len(soundValues)==6: #Au bout de 6 valeurs recoltees on peut faire une moyenne et envoyer cela à la dashboard( au google sheet dans un premier temps)
+        if len(soundValues)==6: #Au bout de 6 valeurs recoltees on peut faire une moyenne et envoyer cela a la dashboard( au google sheet dans un premier temps)
             val_db_heure = ruche.calcule_dB_heure(soundValues)
+            #poids = ruche.pese_ruche()
             soundValues = list() #On remet a zero la liste de valeurs
             ruche.send_son(val_db_heure)
-
+            #ruche.send_poids(poids)
+            
         print(soundValues)
 
-        """jour_actuel = date_actuelle.day
-        if jour_actuel == date_reference_Poids.day #Nous verifions si le jour de notre date de reference et le jour de notre date actuelle correspondent.
+        jour_actuel = date_actuelle.day
+        if jour_actuel == date_reference_Poids.day: #Nous verifions si le jour de notre date de reference et le jour de notre date actuelle correspondent. 
             poids = ruche.pese_ruche()                  #Si les jours correspondent alors on pese la ruche
+            ruche.send_poids(poids)
             date_reference_Poids = date_reference_Poids + timedelta(days=1) #On change notre date de reference en ajoutant 1 jour, afin que la ruche soit pese demain en debut de journee (minuit)
-        """  
+        
 
         if lsm.ruche_enMouvement(): #Verifie si la ruche est en mouvement
             print("La ruche bouge !")
