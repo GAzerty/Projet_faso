@@ -6,7 +6,6 @@ import time
 import sys, math
 import os
 import smbus
-import GPIO
 import I2C
 import requests
 import serial
@@ -63,9 +62,9 @@ DISPLAY_TEXT_ADDR = 0x3e
 def initialisation_ecran():
     os.system("i2cset -y 1 0x62 0x00 0x00")
     os.system("i2cset -y 1 0x62 0x01 0x00")
-    os.system("i2cset -y 1 0x3e 0x80 0x01 # clear display")
-    os.system("i2cset -y 1 0x3e 0x80 0x0F # display on, block cursor")
-    os.system("i2cset -y 1 0x3e 0x80 0x38 # 2 lines")
+    os.system("i2cset -y 1 0x3e 0x80 0x01")
+    os.system("i2cset -y 1 0x3e 0x80 0x0F")
+    os.system("i2cset -y 1 0x3e 0x80 0x38")
 
 #Definit une couleur de fond pour le lcd
 def setRGB(rouge,vert,bleu):
@@ -86,7 +85,7 @@ def prompt_values(poids,son):
 	textCmd(0x38)
 
         affichage_poids = "Poids: "+str(poids)+" kg\n"
-        affichage_son = "Son: "+str(son)+" db"
+        affichage_son = " Son: "+str(son)+" dB "
         affichage = affichage_poids+affichage_son
         
         for carac in range(-1,len(affichage)):
@@ -141,10 +140,7 @@ def calcule_dB_heure(soundValues):
     db_heure = round(db_heure,0)
     return db_heure
 
-#def affichage_graphe_son():
-#Le graphe est affiche sur un moniteur. Il recupere les valeurs stocke dans la base de donnees
-
-#Partie Accelerometre 
+#Partie Accelerometre
 
 address = 0x6a #On renseigne l'adresse de l'accelerometre que l'on recupere avec la commande i2cdetect -y -1
 
@@ -242,13 +238,13 @@ class LSM6DS3:
         xfin = self.readRawAccelX()
         yfin = self.readRawAccelY()
         zfin = self.readRawAccelZ()
-        if (abs(xdebut - xfin) > 1300 or abs(ydebut - yfin) > 1300 or abs(zdebut - zfin) > 1300):
+        if (abs(xdebut - xfin) > 2500 or abs(ydebut - yfin) > 2500 or abs(zdebut - zfin) > 2500):
             enMouvement = True
         return enMouvement
 
 #Partie capteur de poids
 
-    #Retourne le poids de la ruche en gramme
+#Retourne le poids de la ruche en gramme
 def pese_ruche():
     capteur_poids = serial.Serial('/dev/ttyACM0', 9600)
     list_poid = []
@@ -266,8 +262,6 @@ def pese_ruche():
         sum = sum + val
     poids_avg = round(sum/len(list_poid),1)
     return poids_avg
-#	def affichage_graphe_poids():
-
 
 #Partie push bullet:
 

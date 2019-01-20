@@ -1,7 +1,7 @@
 #Main du projet faso, protection et statistiques de ruches
 #On importe ruche.py, notre bibliotheque specifique a notre systeme
 
-import ruche, time, grovepi, math
+import ruche, time, math
 from datetime import datetime, timedelta
 
 #Initialisation des variables globales
@@ -16,13 +16,12 @@ soundValues = list()
 ruche.initialisation_ecran()
 ruche.setRGB(0,255,0)
 
-#poids = ruche.pese_ruche()
-poids = 45
+poids = ruche.pese_ruche()
 son = ruche.capte_son()
 date_reference_Poids = datetime.now() + timedelta(days=1)
 minute_reference_son = datetime.now() + timedelta(minutes=1)
 
-ruche.prompt_values(poids,son)
+ruche.prompt_values(poids,son) #Affichage des donnees sur le lcd
 
 #Debut du programme principal
 print("------------ HIVE SYSTEMS ------------")
@@ -48,19 +47,20 @@ while True:
 
         if len(soundValues)==6: #Au bout de 6 valeurs recoltees on peut faire une moyenne et envoyer cela a la dashboard( au google sheet dans un premier temps)
             val_db_heure = ruche.calcule_dB_heure(soundValues)
-            #poids = ruche.pese_ruche()
             soundValues = list() #On remet a zero la liste de valeurs
             ruche.send_son(val_db_heure)
-            #ruche.send_poids(poids)
+            poids = ruche.pese_ruche()  # Pour la presentation le poids est envoye au meme moment que le son
+            ruche.send_poids(poids)
             
-        print(soundValues)
+        #print(soundValues)
 
+        """#Code en commentaire pour la presentation car la verification est faite une fois par jour
         jour_actuel = date_actuelle.day
         if jour_actuel == date_reference_Poids.day: #Nous verifions si le jour de notre date de reference et le jour de notre date actuelle correspondent. 
             poids = ruche.pese_ruche()                  #Si les jours correspondent alors on pese la ruche
             ruche.send_poids(poids)
             date_reference_Poids = date_reference_Poids + timedelta(days=1) #On change notre date de reference en ajoutant 1 jour, afin que la ruche soit pese demain en debut de journee (minuit)
-        
+        """
 
         if lsm.ruche_enMouvement(): #Verifie si la ruche est en mouvement
             print("La ruche bouge !")
@@ -83,12 +83,13 @@ while True:
         #   hivesystems_alarm = False
         #   Arret du buzzer
         print("Alarme activee")
-        ruche.alarme_vol2()
-        #time.sleep(20) #On active l'alarme pendant 20 secondes !
+        ruche.setRGB(255,0,0)
+        ruche.alarme_vol2() #On active l'alarme numero2 pendant 20 secondes !
+
         if not lsm.ruche_enMouvement():
             hivesystems_secure = True
             hivesystems_alarm = False
             ruche.arret_alarme()
             print("Fin de l'alarme, basculement vers le secure...")
-            #time.sleep(10)
-            #Faut-il retablir date_reference_poids et minute_reference_son ? Au cas ou l'interruption dure plus d'une minute ou plus d'un jour, on perdrait notre repere et le system ne recupererai plus de donnees
+            ruche.setRGB(0,255,0)
+
